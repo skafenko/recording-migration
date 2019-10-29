@@ -1,15 +1,13 @@
 package com.smiddle.core.model.extra;
 
+import com.smiddle.common.model.BaseEntity;
 import com.smiddle.core.model.Call;
 import com.smiddle.core.model.User;
-import com.smiddle.core.util.RidGenerator;
 import com.smiddle.rec.model.calls.CallState;
 import com.smiddle.rec.model.calls.ParticipantType;
 import com.smiddle.rec.model.calls.utility.State;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.GenerationTime;
-import org.hibernate.annotations.GeneratorType;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -17,16 +15,12 @@ import java.util.Date;
 @Entity
 @Table(name = "REC_CALL_PARTICIPANTS")
 @Data
-@EqualsAndHashCode(of = {"agentId", "phone", "xRefCi", "date", "duration"})
+@EqualsAndHashCode(of = {"agentId", "phone", "xRefCi", "date", "duration"}, callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CallParticipant implements State {
+public class CallParticipant extends BaseEntity implements State {
     public static final long serialVersionUID = -1L;
-    @Id
-    @Column(name = "ID")
-    protected volatile Long id;
-    @GeneratorType(type = RidGenerator.class, when = GenerationTime.INSERT)
     @Column(name = "RID")
     protected volatile String rid;
     @Column(name = "AGENT_ID")

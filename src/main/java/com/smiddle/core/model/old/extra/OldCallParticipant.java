@@ -14,7 +14,7 @@ import java.util.Date;
 @Table(name = "REC_CALL_PARTICIPANTS")
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(of = {"agentId", "phone", "xRefCi", "date", "duration"})
+@EqualsAndHashCode(of = {"agentId", "phone", "xRefCi", "date", "duration", "id"})
 @Data
 public class OldCallParticipant {
     public static final long serialVersionUID = -1L;

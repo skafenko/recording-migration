@@ -1,7 +1,6 @@
 package com.smiddle.core.model.extra;
 
-import com.smiddle.common.model.KeyEntity;
-import com.smiddle.common.model.RidGenerator;
+import com.smiddle.common.model.BaseEntity;
 import com.smiddle.core.model.Call;
 import com.smiddle.rec.model.calls.CallState;
 import com.smiddle.rec.model.calls.CallType;
@@ -10,8 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenerationTime;
-import org.hibernate.annotations.GeneratorType;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -24,9 +21,8 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CallParts extends KeyEntity implements State {
+public class CallParts extends BaseEntity implements State {
     public static final long serialVersionUID = -1L;
-    @GeneratorType(type = RidGenerator.class, when = GenerationTime.INSERT)
     @Column(name = "RID")
     protected volatile String rid;
     @Column(name = "PART")

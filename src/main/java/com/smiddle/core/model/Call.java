@@ -1,9 +1,9 @@
 package com.smiddle.core.model;
 
+import com.smiddle.common.model.BaseEntity;
 import com.smiddle.core.model.extra.CallParticipant;
 import com.smiddle.core.model.extra.CallParts;
 import com.smiddle.core.model.extra.CallStatistic;
-import com.smiddle.core.util.RidGenerator;
 import com.smiddle.license.core.holder.LicenseHolder;
 import com.smiddle.rec.model.calls.CallContentType;
 import com.smiddle.rec.model.calls.CallDirection;
@@ -15,7 +15,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.GeneratorType;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -27,13 +26,9 @@ import java.util.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Call {
+public class Call extends BaseEntity {
     public static final long serialVersionUID = -1L;
-    @Id
-    @Column(name = "ID")
-    protected volatile Long id;
     @Column(name = "RID")
-    @GeneratorType(type = RidGenerator.class)
     protected String rid;
     @Column(name = "MS_SESSION_ID", nullable = false)
     private String msSessionId;

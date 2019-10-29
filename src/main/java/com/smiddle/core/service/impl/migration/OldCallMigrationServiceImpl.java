@@ -12,17 +12,19 @@ import com.smiddle.core.model.old.OldUser;
 import com.smiddle.core.model.old.extra.OldCallParticipant;
 import com.smiddle.core.service.MigrationService;
 import com.smiddle.rec.model.calls.CallContentType;
+import com.smiddle.rec.model.calls.CallParticipantType;
 import com.smiddle.rec.model.calls.CallType;
 import com.smiddle.rec.model.calls.ParticipantType;
 import com.smiddle.rec.model.calls.utility.CallTrackPath;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,28 +32,64 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class OldCallMigrationServiceImpl implements MigrationService {
-    private static final int DEFAULT_LIMIT_CALLS = 1;
-    private static final String DEFAULT_CODEC = "WAVE_FORMAT_MULAW/8000";
+    private static final String PATTERN = "yyyy-MM-dd HH:mm";
+    private SimpleDateFormat dateFormat = new SimpleDateFormat(PATTERN);
+    @Value("${default.limit.calls:100}")
+    private int defaultLimitCalls;
+    @Value("${default.codec:WAVE_FORMAT_MULAW/8000}")
+    private String defaultCodec;
     private final OldCallDAO oldCallDAO;
     private final CallDAO callDAO;
 
     @Override
     public void migrate() {
-        log.info("STARTED calls migration");
-        int offset = 0;
-        long count = oldCallDAO.getCount();
-//        while (count > offset) {
-        oldCallDAO.getAllOldCalls(DEFAULT_LIMIT_CALLS, offset).stream()
-                .map(this::migrateOldCallToCall)
-                .forEach(callDAO::saveCall);
-//            offset += DEFAULT_LIMIT_USERS;
-//        }
-        log.info("FINISHED calls migration");
+        try (Scanner scanner = new Scanner(System.in)) {
+            System.out.println("To start calls migration enter start date in format (" + PATTERN + ") or exit to EXIT?");
+            Date startDate = readDate(scanner);
+            System.out.println("To start calls migration enter finish date in format (" + PATTERN + ") or exit to EXIT?");
+            Date finishDate = readDate(scanner);
+            log.info("STARTED calls migration from '{}' to '{}'", startDate, finishDate);
+            int offset = 0;
+            long count = oldCallDAO.getCount(startDate, finishDate);
+            log.info("Found {} calls to migrate", count);
+            while (count > offset) {
+                List<OldCall> oldCalls = oldCallDAO.getAllOldCalls(startDate, finishDate, defaultLimitCalls, offset);
+                oldCalls.stream()
+                        .map(this::migrateOldCallToCall)
+                        .forEach(this::saveCall);
+                offset += defaultLimitCalls;
+                log.info("Migrated {} calls", oldCalls.size());
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        } finally {
+            log.info("FINISHED calls migration");
+        }
+    }
+
+    private void saveCall(Call call) {
+        try {
+            callDAO.saveCall(call);
+        } catch (Exception e) {
+            log.error("Unable to save Call wit id {}, ex={}", call.getId(), e.getMessage());
+        }
+    }
+
+    private Date readDate(Scanner scanner) throws ParseException {
+        String command = scanner.nextLine().trim();
+        if ("exit".equalsIgnoreCase(command)) {
+            throw new RuntimeException("Exit was pressed");
+        }
+        if (command.length() > 0) {
+            return dateFormat.parse(command);
+        }
+        throw new RuntimeException("Command length is less than 0");
     }
 
     private Call migrateOldCallToCall(OldCall oldCall) {
         String trackPath = encryptTrackPath(oldCall.getTrackPath(), oldCall.getDateStart(), oldCall.getLicenseNumber());
-        Call call = Call.builder().id(oldCall.getId())
+        Call call = Call.builder()
+                .rid(UUID.randomUUID().toString())
                 .ccid(oldCall.getCcid())
                 .contentType(CallContentType.AUDIO)
                 .crmCallId(oldCall.getCrmCallId())
@@ -60,6 +98,7 @@ public class OldCallMigrationServiceImpl implements MigrationService {
                 .dateStart(oldCall.getDateStart())
                 .direction(oldCall.getDirection())
                 .duration(oldCall.getDuration())
+                .callParticipantType(CallParticipantType.UNDEFINED)
                 .finishState(oldCall.getFinishState())
                 .licenseNumber(oldCall.getLicenseNumber())
                 .licensed(oldCall.getLicensed())
@@ -71,20 +110,22 @@ public class OldCallMigrationServiceImpl implements MigrationService {
                 .trackPath(trackPath)
                 .callStatistic(getDefaultCallStatistic())
                 .build();
-        call.setParts(Collections.singletonList(generateCallPart(oldCall, trackPath)));
+        call.setParts(Collections.singletonList(generateCallPart(oldCall, trackPath, call)));
         return call;
     }
 
-    private CallParts generateCallPart(OldCall oldCall, String trackPath) {
-        // TODO: 29.10.2019 fix duplicate call parts
+    private CallParts generateCallPart(OldCall oldCall, String trackPath, Call call) {
         CallParts callParts = CallParts.builder()
+                .rid(UUID.randomUUID().toString())
                 .callType(CallType.NORMAL)
                 .duration(oldCall.getDuration())
                 .finishState(oldCall.getFinishState())
                 .trackPath(trackPath)
+                .streamPath1(trackPath)
+                .streamPath2(trackPath)
                 .partId(1)
                 .startTime(oldCall.getDateStart())
-                .call(Call.builder().id(oldCall.getId()).build())
+                .call(call)
                 .build();
         callParts.setParticipants(generateCallParticipants(oldCall, callParts));
         return callParts;
@@ -98,9 +139,9 @@ public class OldCallMigrationServiceImpl implements MigrationService {
 
     private CallParticipant mapOldParticipantToParticipant(OldCallParticipant participant, CallParts callParts) {
         return CallParticipant.builder()
-                .id(participant.getId())
+                .rid(UUID.randomUUID().toString())
                 .agentId(participant.getAgentId())
-                .codec(DEFAULT_CODEC)
+                .codec(defaultCodec)
                 .date(participant.getDate())
                 .duration(participant.getDuration())
                 .finishState(callParts.getFinishState())
@@ -108,7 +149,7 @@ public class OldCallMigrationServiceImpl implements MigrationService {
                 .phone(participant.getPhone())
                 .trackPath(callParts.getTrackPath())
                 .xRefCi(participant.getXRefCi())
-                .call(Call.builder().id(participant.getCall().getId()).build())
+                .call(callParts.getCall())
                 .callPart(callParts)
                 .user(getUser(participant.getUser()))
                 .build();

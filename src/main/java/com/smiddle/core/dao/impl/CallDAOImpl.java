@@ -16,11 +16,6 @@ public class CallDAOImpl implements CallDAO {
     @Override
     @Transactional
     public void saveCall(Call call) {
-        try {
-            em.merge(call);
-        } catch (Exception e) {
-            em.getTransaction().rollback();
-            e.printStackTrace();
-        }
+        em.merge(call);
     }
 }

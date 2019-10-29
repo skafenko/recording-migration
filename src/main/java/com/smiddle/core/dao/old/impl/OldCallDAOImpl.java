@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -17,14 +18,21 @@ public class OldCallDAOImpl implements OldCallDAO {
     private EntityManager em;
 
     @Override
-    public List<OldCall> getAllOldCalls(int maxResult, int startPosition) {
-        return em.createQuery("SELECT c FROM OldCall c", OldCall.class)
+    public List<OldCall> getAllOldCalls(Date startDate, Date finishDate, int maxResult, int startPosition) {
+        return em.createQuery("SELECT c FROM OldCall c " +
+                "where c.dateStart >= :startDate and c.dateStart < :finishDate order by c.id", OldCall.class)
+                .setParameter("startDate", startDate)
+                .setParameter("finishDate", finishDate)
                 .setMaxResults(maxResult)
                 .setFirstResult(startPosition)
                 .getResultList();
     }
 
-    public long getCount() {
-        return em.createQuery("SELECT COUNT(c) FROM OldCall c", Long.class).getSingleResult();
+    public long getCount(Date startDate, Date finishDate) {
+        return em.createQuery("SELECT COUNT(c) FROM OldCall c " +
+                "where c.dateStart >= :startDate and c.dateStart < :finishDate", Long.class)
+                .setParameter("startDate", startDate)
+                .setParameter("finishDate", finishDate)
+                .getSingleResult();
     }
 }

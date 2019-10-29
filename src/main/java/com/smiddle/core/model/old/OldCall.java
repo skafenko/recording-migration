@@ -5,14 +5,12 @@ import com.smiddle.license.core.holder.LicenseHolder;
 import com.smiddle.rec.model.calls.CallDirection;
 import com.smiddle.rec.model.calls.CallState;
 import lombok.*;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Table(name = "REC_CALLS")
@@ -64,7 +62,6 @@ public class OldCall {
     private volatile CallState finishState;
     @Column(name = "IS_MAPPED", nullable = false)
     private volatile boolean mapped;
-    @OneToMany(mappedBy = "call", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @Fetch(FetchMode.SUBSELECT)
-    private Set<OldCallParticipant> participants = new HashSet<>();
+    @OneToMany(mappedBy = "call", fetch = FetchType.EAGER)
+    private List<OldCallParticipant> participants = new ArrayList<>();
 }

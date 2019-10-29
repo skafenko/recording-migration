@@ -18,7 +18,7 @@ public class OldUserDAOImpl implements OldUserDAO {
 
     @Override
     public List<OldUser> getAllOldUsers(int limit, int offset) {
-        return em.createQuery("SELECT r FROM OldUser r", OldUser.class)
+        return em.createQuery("SELECT r FROM OldUser r order by r.id", OldUser.class)
                 .setFirstResult(offset)
                 .setMaxResults(limit)
                 .getResultList();
