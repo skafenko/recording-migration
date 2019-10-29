@@ -18,7 +18,6 @@ import com.smiddle.rec.model.calls.utility.CallTrackPath;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;

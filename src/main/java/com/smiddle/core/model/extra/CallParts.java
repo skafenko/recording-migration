@@ -1,6 +1,5 @@
 package com.smiddle.core.model.extra;
 
-import com.smiddle.common.model.BaseEntity;
 import com.smiddle.common.model.KeyEntity;
 import com.smiddle.common.model.RidGenerator;
 import com.smiddle.core.model.Call;

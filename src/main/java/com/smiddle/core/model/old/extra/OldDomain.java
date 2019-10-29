@@ -1,7 +1,5 @@
 package com.smiddle.core.model.old.extra;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.smiddle.common.model.View;
 import com.smiddle.core.model.old.OldUser;
@@ -14,11 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(
-        name = "ADM_DOMAINS",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "UK_ADM_DOMAINS_LDAP_SERVER_IP", columnNames = {"LDAP_SERVER_IP"}),
-                @UniqueConstraint(name = "UK_ADM_DOMAINS_DOMAIN_NAME", columnNames = {"DOMAIN_NAME"})})
+@Table(name = "ADM_DOMAINS")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

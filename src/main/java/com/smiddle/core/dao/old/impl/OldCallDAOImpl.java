@@ -24,7 +24,6 @@ public class OldCallDAOImpl implements OldCallDAO {
                 .getResultList();
     }
 
-
     public long getCount() {
         return em.createQuery("SELECT COUNT(c) FROM OldCall c", Long.class).getSingleResult();
     }

@@ -1,8 +1,8 @@
 package com.smiddle.core.model.extra;
 
-import com.smiddle.common.model.RidGenerator;
 import com.smiddle.core.model.Call;
 import com.smiddle.core.model.User;
+import com.smiddle.core.util.RidGenerator;
 import com.smiddle.rec.model.calls.CallState;
 import com.smiddle.rec.model.calls.ParticipantType;
 import com.smiddle.rec.model.calls.utility.State;

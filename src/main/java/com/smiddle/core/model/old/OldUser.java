@@ -68,7 +68,6 @@ public class OldUser {
     private OldDomain domain;
     @Fetch(FetchMode.SUBSELECT)
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-//    @Transient
     private List<OldUserGroupRoles> userGroupRoles = new ArrayList<>();
     @Column(name = "LOCALE")
     private String locale;

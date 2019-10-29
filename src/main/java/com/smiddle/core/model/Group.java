@@ -11,17 +11,14 @@ import java.util.List;
 
 @SuppressWarnings("SameParameterValue")
 @Entity
-@Table(name = "ADM_GROUPS",
-        uniqueConstraints = @UniqueConstraint(name = "UK_ADM_GROUPS_RID", columnNames = {"RID"}))
+@Table(name = "ADM_GROUPS")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Group {
-
     public static final long serialVersionUID = -1L;
     @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID")
     protected volatile Long id;
     @Column(name = "RID")

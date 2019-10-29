@@ -13,11 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "ADM_DOMAINS",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "UK_ADM_DOMAINS_LDAP_SERVER_IP", columnNames = {"LDAP_SERVER_IP"}),
-                @UniqueConstraint(name = "UK_ADM_DOMAINS_DOMAIN_NAME", columnNames = {"DOMAIN_NAME"}),
-                @UniqueConstraint(name = "UK_ADM_DOMAINS_RID", columnNames = {"RID"})})
+@Table(name = "ADM_DOMAINS")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

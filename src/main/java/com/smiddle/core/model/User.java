@@ -16,19 +16,7 @@ import java.util.List;
 
 @SuppressWarnings("SameParameterValue")
 @Entity
-@Table(name = "ADM_USERS",
-        indexes = {
-                @Index(name = "IDX_ADM_USERS_AGENT_ID", columnList = "AGENT_ID"),
-                @Index(name = "IDX_ADM_USERS_LOGIN", columnList = "LOGIN"),
-                @Index(name = "IDX_ADM_USERS_LOGIN_AD", columnList = "LOGIN_AD"),
-                @Index(name = "IDX_ADM_USERS_LAST_NAME", columnList = "LAST_NAME"),
-                @Index(name = "IDX_ADM_USERS_FIRST_NAME", columnList = "FIRST_NAME"),
-                @Index(name = "IDX_ADM_USERS_PATRONYMIC_NAME", columnList = "PATRONYMIC_NAME"),
-                @Index(name = "IDX_ADM_USERS_PHONE", columnList = "PHONE")},
-        uniqueConstraints = {
-                @UniqueConstraint(name = "UK_ADM_USERS_LOGIN", columnNames = {"LOGIN"}),
-                @UniqueConstraint(name = "UK_ADM_USERS_RID", columnNames = {"RID"})}
-)
+@Table(name = "ADM_USERS")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

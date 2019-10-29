@@ -12,14 +12,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "ADM_USER_GROUP_ROLE",
-        indexes = {
-                @Index(name = "IDX_ADM_UGR_GROUP_ID", columnList = "ADM_UGR_GROUP"),
-                @Index(name = "IDX_ADM_UGR_ROLE_ID", columnList = "ADM_UGR_ROLE"),
-                @Index(name = "IDX_ADM_UGR_USER_ID", columnList = "ADM_UGR_USER")
-        },
-        uniqueConstraints = @UniqueConstraint(name = "UK_GROUP_ROLE_USER", columnNames = {"ADM_UGR_GROUP", "ADM_UGR_ROLE", "ADM_UGR_USER"})
-)
+@Table(name = "ADM_USER_GROUP_ROLE")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

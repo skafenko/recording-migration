@@ -7,5 +7,4 @@ import java.util.List;
 public interface OldGroupDAO {
 
     List<OldGroup> getAllOldGroupsWithParentNull();
-
 }
