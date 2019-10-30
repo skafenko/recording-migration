@@ -32,38 +32,63 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class OldCallMigrationServiceImpl implements MigrationService {
-    private static final String PATTERN = "yyyy-MM-dd HH:mm";
-    private SimpleDateFormat dateFormat = new SimpleDateFormat(PATTERN);
-    @Value("${default.limit.calls:100}")
-    private int defaultLimitCalls;
-    @Value("${default.codec:WAVE_FORMAT_MULAW/8000}")
-    private String defaultCodec;
     private final OldCallDAO oldCallDAO;
     private final CallDAO callDAO;
+
+    @Value("${default.limit.calls:100}")
+    private int defaultLimitCalls;
+
+    private SimpleDateFormat dateFormat;
+    private String datePattern;
+
+    @Value("${default.date.pattern:yyyy-MM-dd HH:mm}")
+    public void setDatePattern(String datePattern) {
+        this.datePattern = datePattern;
+        this.dateFormat = new SimpleDateFormat(datePattern);
+    }
 
     @Override
     public void migrate() {
         try (Scanner scanner = new Scanner(System.in)) {
-            System.out.println("To start calls migration enter start date in format (" + PATTERN + ") or exit to EXIT?");
-            Date startDate = readDate(scanner);
-            System.out.println("To start calls migration enter finish date in format (" + PATTERN + ") or exit to EXIT?");
-            Date finishDate = readDate(scanner);
-            log.info("STARTED calls migration from '{}' to '{}'", startDate, finishDate);
-            int offset = 0;
-            long count = oldCallDAO.getCount(startDate, finishDate);
-            log.info("Found {} calls to migrate", count);
-            while (count > offset) {
-                List<OldCall> oldCalls = oldCallDAO.getAllOldCalls(startDate, finishDate, defaultLimitCalls, offset);
-                oldCalls.stream()
-                        .map(this::migrateOldCallToCall)
-                        .forEach(this::saveCall);
-                offset += defaultLimitCalls;
-                log.info("Migrated {} calls", oldCalls.size());
+            migrateCalls(scanner);
+            String command = getContinueCommand(scanner);
+            while (!"n".equalsIgnoreCase(command)) {
+                if ("y".equalsIgnoreCase(command)) {
+                    migrateCalls(scanner);
+                    command = getContinueCommand(scanner);
+                } else {
+                    System.out.println("Uknown command " + command + ". Try again press Y/N");
+                    command = scanner.nextLine().trim();
+                }
             }
         } catch (Exception e) {
             log.error(e.getMessage());
         } finally {
             log.info("FINISHED calls migration");
+        }
+    }
+
+    private String getContinueCommand(Scanner scanner) {
+        System.out.println("Do you want to continue press Y/N");
+        return scanner.nextLine().trim();
+    }
+
+    private void migrateCalls(Scanner scanner) {
+        System.out.println("Enter the START DATE in format (" + datePattern + ") or exit to EXIT");
+        Date startDate = readDate(scanner);
+        System.out.println("Enter the FINISH DATE in format (" + datePattern + ") or exit to EXIT");
+        Date finishDate = readDate(scanner);
+        log.info("STARTED calls migration from '{}' to '{}'", startDate, finishDate);
+        int offset = 0;
+        long count = oldCallDAO.getCount(startDate, finishDate);
+        log.info("Found {} calls to migrate", count);
+        while (count > offset) {
+            List<OldCall> oldCalls = oldCallDAO.getAllOldCalls(startDate, finishDate, defaultLimitCalls, offset);
+            oldCalls.stream()
+                    .map(this::migrateOldCallToCall)
+                    .forEach(this::saveCall);
+            log.info("Migrated {} calls from {}", oldCalls.size() + offset, count);
+            offset += defaultLimitCalls;
         }
     }
 
@@ -75,13 +100,18 @@ public class OldCallMigrationServiceImpl implements MigrationService {
         }
     }
 
-    private Date readDate(Scanner scanner) throws ParseException {
+    private Date readDate(Scanner scanner) {
         String command = scanner.nextLine().trim();
         if ("exit".equalsIgnoreCase(command)) {
             throw new RuntimeException("Exit was pressed");
         }
         if (command.length() > 0) {
-            return dateFormat.parse(command);
+            try {
+                return dateFormat.parse(command);
+            } catch (ParseException e) {
+                log.error("Unable to parse date {}. Try again", e.getMessage());
+                return readDate(scanner);
+            }
         }
         throw new RuntimeException("Command length is less than 0");
     }
@@ -141,7 +171,6 @@ public class OldCallMigrationServiceImpl implements MigrationService {
         return CallParticipant.builder()
                 .rid(UUID.randomUUID().toString())
                 .agentId(participant.getAgentId())
-                .codec(defaultCodec)
                 .date(participant.getDate())
                 .duration(participant.getDuration())
                 .finishState(callParts.getFinishState())
