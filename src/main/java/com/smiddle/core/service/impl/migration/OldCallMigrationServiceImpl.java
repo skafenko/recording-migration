@@ -168,19 +168,20 @@ public class OldCallMigrationServiceImpl implements MigrationService {
     }
 
     private CallParticipant mapOldParticipantToParticipant(OldCallParticipant participant, CallParts callParts) {
+        User user = getUser(participant.getUser());
         return CallParticipant.builder()
                 .rid(UUID.randomUUID().toString())
                 .agentId(participant.getAgentId())
                 .date(participant.getDate())
                 .duration(participant.getDuration())
                 .finishState(callParts.getFinishState())
-                .participantType(ParticipantType.UNDEFINED)
+                .participantType(user == null ? ParticipantType.CLIENT : ParticipantType.AGENT)
                 .phone(participant.getPhone())
                 .trackPath(callParts.getTrackPath())
                 .xRefCi(participant.getXRefCi())
                 .call(callParts.getCall())
                 .callPart(callParts)
-                .user(getUser(participant.getUser()))
+                .user(user)
                 .build();
     }
 
