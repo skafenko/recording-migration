@@ -1,16 +1,17 @@
-# Getting Started
+# Recording_Migration
+Recording_Migration was developed to migrate calls from Recording_v.1.0 to Recording_v.2.7. And also included migration 
+users, groups, roles
 
-### Reference Documentation
-For further reference, please consider the following sections:
-
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/docs/2.2.0.RELEASE/maven-plugin/)
-* [Spring Data JPA](https://docs.spring.io/spring-boot/docs/2.2.0.RELEASE/reference/htmlsingle/#boot-features-jpa-and-spring-data)
-* [Spring Boot DevTools](https://docs.spring.io/spring-boot/docs/2.2.0.RELEASE/reference/htmlsingle/#using-boot-devtools)
-* [Spring Configuration Processor](https://docs.spring.io/spring-boot/docs/2.2.0.RELEASE/reference/htmlsingle/#configuration-metadata-annotation-processor)
+## Versioning
+ver 1.0.0
 
 ### Guides
-The following guides illustrate how to use some features concretely:
+The following guides illustrate how to use this project:
+1) Deploy DB for ADM_v.2.2 and Recording_v.2.7;
+2) Make sure that tables AMD_USERS, ADM_GROUPS, ADM_ROLES is empty;
+3) Start the migration and follow instructions;
+4) Deploy SmiddleManager and CallProvider to generate tasks;
 
-* [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
+## Built With
+* [Maven](https://maven.apache.org/) - Dependency Management
 
