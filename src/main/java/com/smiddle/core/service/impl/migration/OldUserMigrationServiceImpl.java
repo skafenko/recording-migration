@@ -15,8 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -34,7 +33,7 @@ public class OldUserMigrationServiceImpl implements MigrationService {
         int offset = 0;
         long count = oldUserDAO.getCount();
         long usersCount = userDAO.getCount();
-        if (count == usersCount) {
+        if (usersCount > 1) {
             log.info("FINISHED users migration because not need");
             return;
         }
@@ -80,17 +79,29 @@ public class OldUserMigrationServiceImpl implements MigrationService {
                     .collect(Collectors.toList());
             user.setRoles(roles);
         }
+        setUpUserGroupRoles(oldUser, user);
+        return user;
+    }
+
+    private void setUpUserGroupRoles(OldUser oldUser, User user) {
+        Set<UserGroupRoles> userGroupRoles = new HashSet<>();
+        oldUser.getGroups().stream()
+                .flatMap(oldGroup -> oldUser.getRoles().stream().map(oldRole -> UserGroupRoles.builder()
+                        .group(Group.builder().id(oldGroup.getId()).build())
+                        .role(Role.builder().id(oldRole.getId()).build())
+                        .user(User.builder().id(oldUser.getId()).build())
+                        .build()))
+                .forEach(userGroupRoles::add);
         if (!oldUser.getUserGroupRoles().isEmpty()) {
-            List<UserGroupRoles> userGroupRoles = oldUser.getUserGroupRoles().stream()
+            oldUser.getUserGroupRoles().stream()
                     .map(oldUserGroupRoles -> UserGroupRoles.builder()
                             .group(Group.builder().id(oldUserGroupRoles.getGroup().getId()).build())
                             .role(Role.builder().id(oldUserGroupRoles.getRole().getId()).build())
                             .user(User.builder().id(oldUserGroupRoles.getUser().getId()).build())
                             .build())
-                    .collect(Collectors.toList());
-            user.setUserGroupRoles(userGroupRoles);
+                    .forEach(userGroupRoles::add);
         }
-        return user;
+        user.setUserGroupRoles(new ArrayList<>(userGroupRoles));
     }
 
     private Domain migrateOldDomainToDomain(OldDomain oldDomain) {

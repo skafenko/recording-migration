@@ -30,7 +30,7 @@ public class OldRoleMigrationServiceImpl implements MigrationService {
         log.info("STARTED roles migration");
         List<OldRole> oldRoles = oldRoleDAO.getAllOldRoles();
         long rolesCount = roleDAO.getCount();
-        if (oldRoles.size() == rolesCount) {
+        if (rolesCount != 0) {
             log.info("FINISHED roles migration because not need");
             return;
         }

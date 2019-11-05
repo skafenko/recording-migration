@@ -50,7 +50,7 @@
                 <database.driver>oracle.jdbc.OracleDriver</database.driver>
 
                 <old.database.url>jdbc:oracle:thin:@10.100.80.11:1521:SMIDDLE</old.database.url>
-                <old.database.username>MSENSE</old.database.username>
+                <old.database.username>MSENSE_NEW</old.database.username>
                 <old.database.password>Smidle098adm</old.database.password>
                 <old.database.driver>oracle.jdbc.OracleDriver</old.database.driver>
             </properties>
