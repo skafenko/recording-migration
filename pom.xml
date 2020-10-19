@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.smiddle</groupId>
     <artifactId>recording-migration</artifactId>
-    <version>1.0.0-RELEASE</version>
+    <version>2.0.0-SNAPSHOT</version>
     <name>recording-migration</name>
     <description>SBER</description>
 

@@ -59,8 +59,8 @@ public class Call extends BaseEntity {
     private String mp4Link;
     @Column(name = "IS_MS_REMOVED", nullable = false)
     private boolean msRemoved;
-    @Column(name = "IS_RECOGNIZED")
-    private boolean recognized;
+    @Column(name = "RECOGNIZE_STATE")
+    private String recognizeState;
     @Column(name = "IS_COMMENTED")
     private boolean commented;
     @Enumerated(EnumType.STRING)

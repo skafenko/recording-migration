@@ -19,6 +19,7 @@ import com.smiddle.rec.model.calls.utility.CallTrackPath;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 @Order(4)
 @RequiredArgsConstructor
 @Slf4j
+@Profile("MIGRATE_CALLS")
 public class OldCallMigrationServiceImpl implements MigrationService {
     private final OldCallDAO oldCallDAO;
     private final CallDAO callDAO;
@@ -126,6 +128,7 @@ public class OldCallMigrationServiceImpl implements MigrationService {
                 .finishState(oldCall.getFinishState())
                 .dateReg(oldCall.getDateReg())
                 .dateStart(oldCall.getDateStart())
+                .recognizeState("NOT_RECOGNIZED")
                 .direction(oldCall.getDirection())
                 .duration(oldCall.getDuration())
                 .callParticipantType(CallParticipantType.UNDEFINED)

@@ -7,6 +7,7 @@ import com.smiddle.core.model.old.OldGroup;
 import com.smiddle.core.service.MigrationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Order(1)
 @Slf4j
+@Profile("MIGRATE_USERS")
 public class OldGroupMigrationServiceImpl implements MigrationService {
     private final OldGroupDAO oldGroupDAO;
     private final GroupDAO groupDAO;

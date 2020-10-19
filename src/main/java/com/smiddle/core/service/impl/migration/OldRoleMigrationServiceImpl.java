@@ -8,6 +8,7 @@ import com.smiddle.core.model.old.OldRole;
 import com.smiddle.core.service.MigrationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 @Order(2)
 @RequiredArgsConstructor
 @Slf4j
+@Profile("MIGRATE_USERS")
 public class OldRoleMigrationServiceImpl implements MigrationService {
     private static final int DEFAULT_SESSION_LIVE_TIME_SEC = 84600;
     private final OldRoleDAO oldRoleDAO;
